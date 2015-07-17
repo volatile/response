@@ -24,24 +24,26 @@ import (
 )
 
 func main() {
+	// We can add functions for templates
 	response.AddViewFunc("toUpper", strings.ToUpper)
+	response.AddViewFunc("toLower", strings.ToLower)
 
-	// Status
+	// Status response
 	route.Get("^/status$", func(c *core.Context) {
 		response.Status(c, http.StatusForbidden)
 	})
 
-	// String
+	// String response
 	route.Get("^/string$", func(c *core.Context) {
 		response.String(c, "Hello, World!")
 	})
 
-	// Bytes
+	// Bytes response
 	route.Get("^/bytes$", func(c *core.Context) {
 		response.Bytes(c, []byte("Hello, World!"))
 	})
 
-	// JSON
+	// JSON response
 	route.Get("^/json$", func(c *core.Context) {
 		response.JSON(c, &Car{
 			ID:    1,
@@ -50,7 +52,7 @@ func main() {
 		})
 	})
 
-	// View
+	// View response
 	route.Get("^/(?P<name>[A-Za-z]+)$", func(c *core.Context, params map[string]string) {
 		response.View(c, "hello", params)
 	})
@@ -82,3 +84,8 @@ In `views/hello.gohtml`:
 ```
 
 [![GoDoc](https://godoc.org/github.com/volatile/response?status.svg)](https://godoc.org/github.com/volatile/response)
+
+### Views
+
+The views templates are recursively parsed from the `views` directory, just before running the server.  
+The file names and extensions and the directory organization doesn't matter. All the files are parsed.
