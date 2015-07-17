@@ -24,7 +24,7 @@ import (
 )
 
 func main() {
-	// We can add functions for templates
+	// We can add functions for templates.
 	response.AddViewFunc("toUpper", strings.ToUpper)
 	response.AddViewFunc("toLower", strings.ToLower)
 

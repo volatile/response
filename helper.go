@@ -46,7 +46,7 @@ func AddViewFunc(name string, f interface{}) {
 	views.Funcs(template.FuncMap{name: f})
 }
 
-// Status responds with the given status.
+// Status responds with the given status code.
 func Status(c *core.Context, v int) {
 	c.ResponseWriter.WriteHeader(v)
 }
@@ -61,7 +61,7 @@ func Bytes(c *core.Context, b []byte) {
 	c.ResponseWriter.Write(b)
 }
 
-// JSON responds with the marshalled content with Content-Type header.
+// JSON set the correct header and responds with the marshalled content.
 func JSON(c *core.Context, v interface{}) {
 	c.ResponseWriter.Header().Set("Content-Type", "application/json")
 
@@ -83,7 +83,7 @@ func JSON(c *core.Context, v interface{}) {
 	c.ResponseWriter.Write(js)
 }
 
-// View responds with the given template with data.
+// View pass the data to the template from namea and responds with it.
 func View(c *core.Context, name string, data interface{}) {
 	err := views.ExecuteTemplate(c.ResponseWriter, name, data)
 	if err != nil {

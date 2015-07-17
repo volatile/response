@@ -18,7 +18,7 @@ Here is the full example status, string, bytes, JSON and view responses:
 	)
 
 	func main() {
-		// We can add functions for templates
+		// We can add functions for templates.
 		response.AddViewFunc("toUpper", strings.ToUpper)
 		response.AddViewFunc("toLower", strings.ToLower)
 
