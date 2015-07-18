@@ -24,9 +24,11 @@ import (
 )
 
 func main() {
-	// We can add functions for templates.
-	response.AddViewFunc("toUpper", strings.ToUpper)
-	response.AddViewFunc("toLower", strings.ToLower)
+	// We set functions for views templates.
+	response.ViewsFuncs(response.FuncMap{
+		"toUpper": strings.ToUpper,
+		"toLower": strings.ToLower,
+	})
 
 	// Status response
 	route.Get("^/status$", func(c *core.Context) {
@@ -89,3 +91,7 @@ In `views/hello.gohtml`:
 
 The views templates are recursively parsed from the `views` directory, just before running the server.  
 The file names and extensions and the directory organization doesn't matter. All the files are parsed.
+
+#### Template functions
+
+To use functions in your views, use `response.ViewsFuncs(response.FuncMap{})`, like with the `html/template` standard package.
