@@ -4,7 +4,7 @@ It provides syntactic sugar that let's you easily write responses on *core.Conte
 
 Usage
 
-A full example with status, string, bytes, JSON and view responses:
+Full example with status, string, bytes, JSON and view responses:
 
 	package main
 
