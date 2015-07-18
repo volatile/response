@@ -1,4 +1,4 @@
-<p align="center"><img src="https://cloud.githubusercontent.com/assets/9503891/8758179/67dfe466-2ce1-11e5-9539-2740ca0179bf.png" alt="Volatile Response" title="Volatile Response"><br><br></p>
+<p align="center"><img src="http://volatile.whitedevops.com/images/repositories/response/logo.png" alt="Volatile Response" title="Volatile Response"><br><br></p>
 
 Volatile Response is a helper for the [Core](https://github.com/volatile/core).  
 It provides syntactic sugar that let's you easily write responses on `*core.Context`.
