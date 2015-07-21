@@ -24,7 +24,7 @@ import (
 )
 
 func main() {
-	// We set functions for views templates.
+	// Functions for views templates
 	response.ViewsFuncs(response.FuncMap{
 		"toUpper": strings.ToUpper,
 		"toLower": strings.ToLower,
