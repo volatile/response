@@ -11,10 +11,9 @@ import (
 	"github.com/volatile/core"
 )
 
-var (
-	views    *template.Template
-	viewsDir = "views"
-)
+const viewsDir = "views"
+
+var views *template.Template
 
 func init() {
 	views = template.New("views")
