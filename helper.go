@@ -53,7 +53,7 @@ func ViewsFuncs(funcMap FuncMap) {
 
 // Status responds with the given status code.
 func Status(c *core.Context, v int) {
-	c.ResponseWriter.WriteHeader(v)
+	http.Error(c.ResponseWriter, http.StatusText(v), v)
 }
 
 // String responds with the given string.
