@@ -95,7 +95,8 @@ func JSON(c *core.Context, v interface{}) {
 }
 
 // View pass the data to the template from namea and responds with it.
-func View(c *core.Context, name string, data interface{}) {
+func View(c *core.Context, name string, data map[string]interface{}) {
+	data["c"] = c
 	err := views.ExecuteTemplate(c.ResponseWriter, name, data)
 	if err != nil {
 		log.Println(err)
