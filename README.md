@@ -92,6 +92,13 @@ In `views/hello.gohtml`:
 The views templates are recursively parsed from the `views` directory, just before running the server.  
 The file names and extensions and the directory organization doesn't matter. All the files are parsed.
 
-#### Template functions
+#### Built-in functions
+
+This package gives some functions out-of-the-box:
+
+- `html` uses a raw string without escaping it
+- `nl2br` replaces `\n` by `<br>\n`
+
+#### Custom functions
 
 To use functions in your views, use `response.ViewsFuncs(response.FuncMap{})`, like with the `html/template` standard package.

@@ -18,6 +18,12 @@ var views *template.Template
 func init() {
 	views = template.New("views")
 
+	// Built-in views funcs
+	views.Funcs(template.FuncMap{
+		"html":  viewsFuncHTML,
+		"nl2br": viewsFuncNL2BR,
+	})
+
 	core.BeforeRun(func() {
 		if _, err := os.Stat(viewsDir); err == nil {
 			err = filepath.Walk(viewsDir, func(path string, f os.FileInfo, err error) error {
