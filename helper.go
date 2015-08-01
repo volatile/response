@@ -79,8 +79,6 @@ func Bytes(c *core.Context, b []byte) {
 
 // JSON set the correct header and responds with the marshalled content.
 func JSON(c *core.Context, v interface{}) {
-	c.ResponseWriter.Header().Set("Content-Type", "application/json")
-
 	var js []byte
 	var err error
 
@@ -96,6 +94,7 @@ func JSON(c *core.Context, v interface{}) {
 		return
 	}
 
+	c.ResponseWriter.Header().Set("Content-Type", "application/json")
 	c.ResponseWriter.Write(js)
 }
 
