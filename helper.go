@@ -79,23 +79,11 @@ func Bytes(c *core.Context, b []byte) {
 
 // JSON set the correct header and responds with the marshalled content.
 func JSON(c *core.Context, v interface{}) {
-	var js []byte
-	var err error
-
-	if core.Production {
-		js, err = json.Marshal(v)
-	} else {
-		js, err = json.MarshalIndent(v, "", "\t")
-	}
-
-	if err != nil {
+	c.ResponseWriter.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(c.ResponseWriter).Encode(v); err != nil {
 		log.Println(err)
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
 	}
-
-	c.ResponseWriter.Header().Set("Content-Type", "application/json")
-	c.ResponseWriter.Write(js)
 }
 
 // View pass the data to the template associated to name, and responds with it.
