@@ -25,25 +25,30 @@ func init() {
 	})
 
 	core.BeforeRun(func() {
-		if _, err := os.Stat(viewsDir); err == nil {
-			err = filepath.Walk(viewsDir, func(path string, f os.FileInfo, err error) error {
-				if err != nil {
-					return err
-				}
+		if _, err := os.Stat(viewsDir); err != nil {
+			return
+		}
 
-				if !f.IsDir() {
-					if _, err = views.ParseFiles(path); err != nil {
-						return err
-					}
-				}
-
-				return nil
-			})
-			if err != nil {
-				panic(err)
-			}
+		if err := filepath.Walk(viewsDir, walk); err != nil {
+			panic(err)
 		}
 	})
+}
+
+// walk is the path/filepath.WalkFunc that is used to walk viewsDir in order to initialize
+// views. It will try to parse all files it encounters and recurse into subdirectories.
+func walk(path string, f os.FileInfo, err error) error {
+	if err != nil {
+		return err
+	}
+
+	if f.IsDir() {
+		return nil
+	}
+
+	_, err = views.ParseFiles(path)
+
+	return err
 }
 
 // FuncMap is the type of the map defining the mapping from names to functions.
@@ -101,6 +106,5 @@ func View(c *core.Context, name string, data map[string]interface{}) {
 	if err != nil {
 		log.Println(err)
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
 	}
 }
