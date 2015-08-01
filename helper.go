@@ -79,7 +79,7 @@ func Bytes(c *core.Context, b []byte) {
 
 // JSON set the correct header and responds with the marshalled content.
 func JSON(c *core.Context, v interface{}) {
-	c.ResponseWriter.Header().Set("Content-Type", "application/json")
+	c.ResponseWriter.Header().Set("Content-Type", "application/json;charset=utf-8")
 	if err := json.NewEncoder(c.ResponseWriter).Encode(v); err != nil {
 		log.Println(err)
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
