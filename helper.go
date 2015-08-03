@@ -25,25 +25,30 @@ func init() {
 	})
 
 	core.BeforeRun(func() {
-		if _, err := os.Stat(viewsDir); err == nil {
-			err = filepath.Walk(viewsDir, func(path string, f os.FileInfo, err error) error {
-				if err != nil {
-					return err
-				}
+		if _, err := os.Stat(viewsDir); err != nil {
+			return
+		}
 
-				if !f.IsDir() {
-					if _, err = views.ParseFiles(path); err != nil {
-						return err
-					}
-				}
-
-				return nil
-			})
-			if err != nil {
-				panic(err)
-			}
+		if err := filepath.Walk(viewsDir, viewsWalk); err != nil {
+			panic(err)
 		}
 	})
+}
+
+// walk is the path/filepath.WalkFunc used to walk viewsDir in order to initialize views.
+// It will try to parse all files it encounters and recurse into subdirectories.
+func viewsWalk(path string, f os.FileInfo, err error) error {
+	if err != nil {
+		return err
+	}
+
+	if f.IsDir() {
+		return nil
+	}
+
+	_, err = views.ParseFiles(path)
+
+	return err
 }
 
 // FuncMap is the type of the map defining the mapping from names to functions.
@@ -75,23 +80,10 @@ func Bytes(c *core.Context, b []byte) {
 // JSON set the correct header and responds with the marshalled content.
 func JSON(c *core.Context, v interface{}) {
 	c.ResponseWriter.Header().Set("Content-Type", "application/json")
-
-	var js []byte
-	var err error
-
-	if core.Production {
-		js, err = json.Marshal(v)
-	} else {
-		js, err = json.MarshalIndent(v, "", "\t")
-	}
-
-	if err != nil {
+	if err := json.NewEncoder(c.ResponseWriter).Encode(v); err != nil {
 		log.Println(err)
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
 	}
-
-	c.ResponseWriter.Write(js)
 }
 
 // View pass the data to the template associated to name, and responds with it.
@@ -101,6 +93,5 @@ func View(c *core.Context, name string, data map[string]interface{}) {
 	if err != nil {
 		log.Println(err)
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
 	}
 }
