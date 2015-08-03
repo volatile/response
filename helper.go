@@ -2,6 +2,7 @@ package response
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -30,7 +31,7 @@ func init() {
 		}
 
 		if err := filepath.Walk(viewsDir, viewsWalk); err != nil {
-			panic(err)
+			panic(fmt.Errorf("response: %v", err))
 		}
 	})
 }
