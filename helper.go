@@ -35,8 +35,8 @@ func init() {
 	})
 }
 
-// walk is the path/filepath.WalkFunc that is used to walk viewsDir in order to initialize
-// views. It will try to parse all files it encounters and recurse into subdirectories.
+// walk is the path/filepath.WalkFunc used to walk viewsDir in order to initialize views.
+// It will try to parse all files it encounters and recurse into subdirectories.
 func walk(path string, f os.FileInfo, err error) error {
 	if err != nil {
 		return err
@@ -79,7 +79,7 @@ func Bytes(c *core.Context, b []byte) {
 
 // JSON set the correct header and responds with the marshalled content.
 func JSON(c *core.Context, v interface{}) {
-	c.ResponseWriter.Header().Set("Content-Type", "application/json;charset=utf-8")
+	c.ResponseWriter.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(c.ResponseWriter).Encode(v); err != nil {
 		log.Println(err)
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
