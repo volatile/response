@@ -3,7 +3,6 @@ package response
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"html/template"
 	"net/http"
 	"os"
@@ -32,7 +31,7 @@ func init() {
 
 	core.BeforeRun(func() {
 		if err := filepath.Walk(viewsDir, viewsWalk); err != nil {
-			panic(fmt.Errorf("response: %v", err))
+			panic("response: " + err.Error())
 		}
 	})
 }
