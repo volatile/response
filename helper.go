@@ -17,6 +17,10 @@ const viewsDir = "views"
 var views *template.Template
 
 func init() {
+	if _, err := os.Stat(viewsDir); err != nil {
+		return
+	}
+
 	views = template.New("views")
 
 	// Built-in views funcs
@@ -26,10 +30,6 @@ func init() {
 	})
 
 	core.BeforeRun(func() {
-		if _, err := os.Stat(viewsDir); err != nil {
-			return
-		}
-
 		if err := filepath.Walk(viewsDir, viewsWalk); err != nil {
 			panic(fmt.Errorf("response: %v", err))
 		}
@@ -60,6 +60,9 @@ type FuncMap map[string]interface{}
 
 // ViewsFuncs adds a function that will be available to all templates.
 func ViewsFuncs(funcMap FuncMap) {
+	if views == nil {
+		panic(`response: views can't be used without a "views" directory`)
+	}
 	views.Funcs(template.FuncMap(funcMap))
 }
 
@@ -89,9 +92,11 @@ func JSON(c *core.Context, v interface{}) {
 
 // View pass the data to the template associated to name, and responds with it.
 func View(c *core.Context, name string, data map[string]interface{}) {
+	if views == nil {
+		panic(`response: views can't be used without a "views" directory`)
+	}
 	data["c"] = c
-	err := views.ExecuteTemplate(c.ResponseWriter, name, data)
-	if err != nil {
+	if err := views.ExecuteTemplate(c.ResponseWriter, name, data); err != nil {
 		log.Println(err)
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
