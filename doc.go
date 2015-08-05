@@ -1,6 +1,6 @@
 /*
 Package response is a helper for the Core.
-It provides syntactic sugar that let's you easily write responses on *core.Context.
+It provides syntactic sugar that lets you easily write responses on *core.Context.
 
 Usage
 
@@ -72,7 +72,7 @@ Built-in functions
 This package gives some functions out-of-the-box:
 
 - "html" uses a raw string without escaping it
-- "nl2br" replaces "\n" by "<br>\n"
+- "nl2br" replaces "\n" by "<br>"
 
 Custom functions
 

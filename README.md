@@ -1,7 +1,7 @@
 <p align="center"><img src="http://volatile.whitedevops.com/images/repositories/response/logo.png" alt="Volatile Response" title="Volatile Response"><br><br></p>
 
 Volatile Response is a helper for the [Core](https://github.com/volatile/core).  
-It provides syntactic sugar that let's you easily write responses on `*core.Context`.
+It provides syntactic sugar that lets you easily write responses on `*core.Context`.
 
 ## Installation
 

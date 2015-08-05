@@ -10,5 +10,5 @@ func viewsFuncHTML(s string) template.HTML {
 }
 
 func viewsFuncNL2BR(s string) template.HTML {
-	return template.HTML(strings.Replace(s, "\n", "<br>\n", -1))
+	return template.HTML(strings.Replace(s, "\n", "<br>", -1))
 }
