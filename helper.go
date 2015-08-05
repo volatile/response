@@ -2,6 +2,7 @@ package response
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -85,7 +86,7 @@ func Bytes(c *core.Context, b []byte) {
 func JSON(c *core.Context, v interface{}) {
 	c.ResponseWriter.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(c.ResponseWriter).Encode(v); err != nil {
-		log.Stack("response", err)
+		log.Stack(err)
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
@@ -93,11 +94,11 @@ func JSON(c *core.Context, v interface{}) {
 // View pass the data to the template associated to name, and responds with it.
 func View(c *core.Context, name string, data map[string]interface{}) {
 	if views == nil {
-		panic(`response: views can't be used without a "views" directory`)
+		log.Stack(errors.New(`views can't be used without a "views" directory`))
 	}
 	data["c"] = c
 	if err := views.ExecuteTemplate(c.ResponseWriter, name, data); err != nil {
-		log.Stack("response", err)
+		log.Stack(err)
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
