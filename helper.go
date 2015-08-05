@@ -4,12 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 
 	"github.com/volatile/core"
+	"github.com/volatile/core/log"
 )
 
 const viewsDir = "views"
@@ -85,7 +85,7 @@ func Bytes(c *core.Context, b []byte) {
 func JSON(c *core.Context, v interface{}) {
 	c.ResponseWriter.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(c.ResponseWriter).Encode(v); err != nil {
-		log.Println(err)
+		log.Stack("response", err)
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
@@ -97,7 +97,7 @@ func View(c *core.Context, name string, data map[string]interface{}) {
 	}
 	data["c"] = c
 	if err := views.ExecuteTemplate(c.ResponseWriter, name, data); err != nil {
-		log.Println(err)
+		log.Stack("response", err)
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }
