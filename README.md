@@ -6,7 +6,7 @@ It provides syntactic sugar that lets you easily write responses on `*core.Conte
 ## Installation
 
 ```Shell
-$ go get -u github.com/volatile/response
+$ go get github.com/volatile/response
 ```
 
 ## Usage
