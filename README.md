@@ -1,7 +1,7 @@
 <p align="center"><img src="http://volatile.whitedevops.com/images/repositories/response/logo.png" alt="Volatile Response" title="Volatile Response"><br><br></p>
 
 Volatile Response is a helper for the [Core](https://github.com/volatile/core).  
-It provides syntactic sugar that lets you easily write responses on `*core.Context`.
+It provides syntactic sugar that lets you easily write responses on the context.
 
 ## Installation
 
@@ -9,7 +9,7 @@ It provides syntactic sugar that lets you easily write responses on `*core.Conte
 $ go get github.com/volatile/response
 ```
 
-## Usage
+## Usage [![GoDoc](https://godoc.org/github.com/volatile/response?status.svg)](https://godoc.org/github.com/volatile/response)
 
 ```Go
 package main
@@ -85,8 +85,6 @@ In `views/hello.gohtml`:
 {{end}}
 ```
 
-[![GoDoc](https://godoc.org/github.com/volatile/response?status.svg)](https://godoc.org/github.com/volatile/response)
-
 ### Views
 
 The views templates are recursively parsed from the `views` directory, just before running the server.  
@@ -97,8 +95,8 @@ The file names and extensions and the directory organization doesn't matter. All
 This package gives some functions out-of-the-box:
 
 - `html` uses a raw string without escaping it
-- `nl2br` replaces `\n` by `<br>\n`
+- `nl2br` replaces `\n` by `<br>`
 
 #### Custom functions
 
-To use functions in your views, use `response.ViewsFuncs(response.FuncMap{})`, like with the `html/template` standard package.
+To use functions in your views, use [`ViewsFuncs`](https://godoc.org/github.com/volatile/response#ViewsFuncs), like with the *html/template* standard package.

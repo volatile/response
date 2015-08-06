@@ -1,6 +1,6 @@
 /*
-Package response is a helper for the Core.
-It provides syntactic sugar that lets you easily write responses on *core.Context.
+Package response is a helper for the Core (https://github.com/volatile/core).
+It provides syntactic sugar that lets you easily write responses on the context.
 
 Usage
 
@@ -72,10 +72,11 @@ Built-in functions
 This package gives some functions out-of-the-box:
 
 - "html" uses a raw string without escaping it
+
 - "nl2br" replaces "\n" by "<br>"
 
 Custom functions
 
-To use functions in your views, use response.ViewsFuncs(response.FuncMap{}), like with the `html/template` standard package.
+To use functions in your views, use ViewsFuncs, like with the `html/template` standard package.
 */
 package response
