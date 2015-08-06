@@ -4,7 +4,7 @@ It provides syntactic sugar that lets you easily write responses on the context.
 
 Usage
 
-Full example with status, string, bytes, JSON and view responses:
+Example:
 
 	package main
 
