@@ -95,6 +95,9 @@ func View(c *core.Context, name string, data map[string]interface{}) {
 	if views == nil {
 		log.Stack(errors.New(`views can't be used without a "views" directory`))
 	}
+	if data == nil {
+		data = make(map[string]interface{})
+	}
 	data["c"] = c
 	if err := views.ExecuteTemplate(c.ResponseWriter, name, data); err != nil {
 		log.Stack(err)
