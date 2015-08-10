@@ -2,6 +2,12 @@
 Package response is a helper for the Core (https://github.com/volatile/core).
 It provides syntactic sugar that lets you easily write responses on the context.
 
+Installation
+
+In the terminal:
+
+	$ go get github.com/volatile/response
+
 Usage
 
 Example:
