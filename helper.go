@@ -94,6 +94,8 @@ func JSON(c *core.Context, v interface{}) {
 func View(c *core.Context, name string, data map[string]interface{}) {
 	if views == nil {
 		log.Stack(errors.New(`views can't be used without a "views" directory`))
+		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
 	if data == nil {
 		data = make(map[string]interface{})
