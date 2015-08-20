@@ -97,10 +97,13 @@ func View(c *core.Context, name string, data map[string]interface{}) {
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+
 	if data == nil {
 		data = make(map[string]interface{})
 	}
 	data["c"] = c
+
+	c.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := views.ExecuteTemplate(c.ResponseWriter, name, data); err != nil {
 		log.Stack(err)
 		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
