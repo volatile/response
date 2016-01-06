@@ -2,7 +2,6 @@ package response
 
 import (
 	"encoding/json"
-	"errors"
 	"html/template"
 	"net/http"
 	"os"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/volatile/core"
 	"github.com/volatile/core/httputil"
-	"github.com/volatile/core/log"
 )
 
 const viewsDir = "views"
@@ -105,8 +103,7 @@ func JSON(c *core.Context, v interface{}) {
 func JSONStatus(c *core.Context, v interface{}, code int) {
 	b, err := json.Marshal(v)
 	if err != nil {
-		log.Stack(err)
-		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		panic(err)
 	}
 
 	c.ResponseWriter.Header().Set("Content-Type", "application/json")
@@ -117,9 +114,7 @@ func JSONStatus(c *core.Context, v interface{}, code int) {
 // View pass the data to the template associated to name, and responds with it.
 func View(c *core.Context, name string, data map[string]interface{}) {
 	if views == nil {
-		log.Stack(errors.New(`views can't be used without a "views" directory`))
-		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
+		panic(`response: views can't be used without a "views" directory`)
 	}
 
 	if data == nil {
@@ -129,7 +124,6 @@ func View(c *core.Context, name string, data map[string]interface{}) {
 
 	c.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
 	if err := views.ExecuteTemplate(c.ResponseWriter, name, data); err != nil {
-		log.Stack(err)
-		http.Error(c.ResponseWriter, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		panic(err)
 	}
 }
