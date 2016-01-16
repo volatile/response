@@ -124,8 +124,17 @@ func Template(c *core.Context, name string, data map[string]interface{}) {
 
 // TemplateStatus responds with the status code and the template associated to name.
 func TemplateStatus(c *core.Context, code int, name string, data map[string]interface{}) {
+	c.ResponseWriter.Header().Set("Content-Type", "text/html; charsets=utf-8")
+	c.ResponseWriter.WriteHeader(code)
+	if err := ExecuteTemplate(c.ResponseWriter, c, name, data); err != nil {
+		panic(err)
+	}
+}
+
+// ExecuteTemplate works like the standard html/template.Template.ExecuteTemplate function but ensures that the context is part of the data.
+func ExecuteTemplate(wr io.Writer, c *core.Context, name string, data map[string]interface{}) error {
 	if templates == nil {
-		panic(ErrNoTemplatesDir)
+		return ErrNoTemplatesDir
 	}
 
 	if data == nil {
@@ -133,14 +142,5 @@ func TemplateStatus(c *core.Context, code int, name string, data map[string]inte
 	}
 	data["c"] = c
 
-	c.ResponseWriter.Header().Set("Content-Type", "text/html; charsets=utf-8")
-	c.ResponseWriter.WriteHeader(code)
-	if err := ExecuteTemplate(c.ResponseWriter, name, data); err != nil {
-		panic(err)
-	}
-}
-
-// ExecuteTemplate works like the standard html/template.Template.ExecuteTemplate function.
-func ExecuteTemplate(wr io.Writer, name string, data map[string]interface{}) error {
 	return templates.ExecuteTemplate(wr, name, data)
 }
