@@ -77,9 +77,9 @@ Built-in functions
 
 This package gives some functions out-of-the-box:
 
-- "html" uses a raw string without escaping it
+● "html" uses a raw string without escaping it
 
-- "nl2br" replaces "\n" by "<br>"
+● "nl2br" replaces "\n" by "<br>"
 
 Custom functions
 
