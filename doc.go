@@ -24,8 +24,8 @@ Example:
 	)
 
 	func main() {
-		// We set functions for views templates.
-		response.ViewsFuncs(response.FuncMap{
+		// We set functions for templates.
+		response.TemplatesFuncs(response.FuncMap{
 			"toUpper": strings.ToUpper,
 			"toLower": strings.ToLower,
 		})
@@ -54,9 +54,9 @@ Example:
 			})
 		})
 
-		// View response
+		// Templates response
 		route.Get("^/(?P<name>[A-Za-z]+)$", func(c *core.Context, params map[string]string) {
-			response.View(c, "hello", params)
+			response.Templates(c, "hello", params)
 		})
 
 		core.Run()
@@ -68,9 +68,9 @@ Example:
 		Model string `json:"model"`
 	}
 
-Views
+Templates
 
-The views templates are recursively parsed from the "views" directory, just before running the server.
+The templates templates are recursively parsed from the "templates" directory, just before running the server.
 Filenames (including extensions) and directory organization doesn't matter. All the files are parsed.
 
 Built-in functions
@@ -83,6 +83,6 @@ This package gives some functions out-of-the-box:
 
 Custom functions
 
-To use functions in your views, use ViewsFuncs, like with the `html/template` standard package.
+To use functions in your templates, use TemplatesFuncs, like with the `html/template` standard package.
 */
 package response

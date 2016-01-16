@@ -24,8 +24,8 @@ import (
 )
 
 func main() {
-	// Functions for views templates
-	response.ViewsFuncs(response.FuncMap{
+	// Functions for templates
+	response.TemplatesFuncs(response.FuncMap{
 		"toUpper": strings.ToUpper,
 		"toLower": strings.ToLower,
 	})
@@ -54,9 +54,9 @@ func main() {
 		})
 	})
 
-	// View response
+	// Template response
 	route.Get("^/(?P<name>[A-Za-z]+)$", func(c *core.Context, params map[string]string) {
-		response.View(c, "hello", params)
+		response.Template(c, "hello", params)
 	})
 
 	core.Run()
@@ -69,7 +69,7 @@ type Car struct {
 }
 ```
 
-In `views/hello.gohtml`:
+In `templates/hello.gohtml`:
 
 ```HTML
 {{define "hello"}}
@@ -85,9 +85,9 @@ In `views/hello.gohtml`:
 {{end}}
 ```
 
-### Views
+### Templates
 
-The views templates are recursively parsed from the `views` directory, just before running the server.  
+The templates templates are recursively parsed from the `templates` directory, just before running the server.  
 Filenames (including extensions) and directory organization doesn't matter. All the files are parsed.
 
 #### Built-in functions
@@ -99,4 +99,4 @@ This package gives some functions out-of-the-box:
 
 #### Custom functions
 
-To use functions in your views, use [`ViewsFuncs`](https://godoc.org/github.com/volatile/response#ViewsFuncs), like with the *html/template* standard package.
+To use functions in your templates, use [`TemplatesFuncs`](https://godoc.org/github.com/volatile/response#TemplatesFuncs), like with the *html/template* standard package.
