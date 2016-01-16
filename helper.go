@@ -72,11 +72,11 @@ func Status(c *core.Context, v int) {
 
 // String responds with the given string.
 func String(c *core.Context, s string) {
-	StringStatus(c, s, http.StatusOK)
+	StringStatus(c, http.StatusOK, s)
 }
 
 // StringStatus responds with the given string and status code.
-func StringStatus(c *core.Context, s string, code int) {
+func StringStatus(c *core.Context, code int, s string) {
 	httputil.SetDetectedContentType(c.ResponseWriter, []byte(s))
 	c.ResponseWriter.WriteHeader(code)
 	c.ResponseWriter.Write([]byte(s))
@@ -84,11 +84,11 @@ func StringStatus(c *core.Context, s string, code int) {
 
 // Bytes responds with the given slice of byte.
 func Bytes(c *core.Context, b []byte) {
-	BytesStatus(c, b, http.StatusOK)
+	BytesStatus(c, http.StatusOK, b)
 }
 
 // BytesStatus responds with the given slice of byte and status code.
-func BytesStatus(c *core.Context, b []byte, code int) {
+func BytesStatus(c *core.Context, code int, b []byte) {
 	httputil.SetDetectedContentType(c.ResponseWriter, b)
 	c.ResponseWriter.WriteHeader(code)
 	c.ResponseWriter.Write(b)
@@ -96,11 +96,11 @@ func BytesStatus(c *core.Context, b []byte, code int) {
 
 // JSON set the correct header and responds with the marshalled content.
 func JSON(c *core.Context, v interface{}) {
-	JSONStatus(c, v, http.StatusOK)
+	JSONStatus(c, http.StatusOK, v)
 }
 
 // JSONStatus set the correct header and responds with the marshalled content and status code.
-func JSONStatus(c *core.Context, v interface{}, code int) {
+func JSONStatus(c *core.Context, code int, v interface{}) {
 	b, err := json.Marshal(v)
 	if err != nil {
 		panic(err)
