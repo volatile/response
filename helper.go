@@ -2,7 +2,9 @@ package response
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
+	"io"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -11,33 +13,38 @@ import (
 	"github.com/volatile/core/httputil"
 )
 
-const viewsDir = "views"
+const templatesDir = "templates"
 
-var views *template.Template
+var (
+	// ErrNoTemplatesDir is used when a template feature is used without having the templates directory.
+	ErrNoTemplatesDir = fmt.Errorf("response: templates can't be used without a %q directory", templatesDir)
+
+	templates *template.Template
+)
 
 func init() {
-	if _, err := os.Stat(viewsDir); err != nil {
+	if _, err := os.Stat(templatesDir); err != nil {
 		return
 	}
 
-	views = template.New("views")
+	templates = template.New(templatesDir)
 
-	// Built-in views funcs
-	views.Funcs(template.FuncMap{
-		"html":  viewsFuncHTML,
-		"nl2br": viewsFuncNL2BR,
+	// Built-in templates funcs
+	templates.Funcs(template.FuncMap{
+		"html":  templatesFuncHTML,
+		"nl2br": templatesFuncNL2BR,
 	})
 
 	core.BeforeRun(func() {
-		if err := filepath.Walk(viewsDir, viewsWalk); err != nil {
+		if err := filepath.Walk(templatesDir, templatesWalk); err != nil {
 			panic("response: " + err.Error())
 		}
 	})
 }
 
-// walk is the path/filepath.WalkFunc used to walk viewsDir in order to initialize views.
+// walk is the path/filepath.WalkFunc used to walk templatesDir in order to initialize templates.
 // It will try to parse all files it encounters and recurse into subdirectories.
-func viewsWalk(path string, f os.FileInfo, err error) error {
+func templatesWalk(path string, f os.FileInfo, err error) error {
 	if err != nil {
 		return err
 	}
@@ -46,7 +53,7 @@ func viewsWalk(path string, f os.FileInfo, err error) error {
 		return nil
 	}
 
-	_, err = views.ParseFiles(path)
+	_, err = templates.ParseFiles(path)
 	return err
 }
 
@@ -56,12 +63,12 @@ func viewsWalk(path string, f os.FileInfo, err error) error {
 // FuncMap has the same base type as FuncMap in "text/template", copied here so clients need not import "text/template".
 type FuncMap map[string]interface{}
 
-// ViewsFuncs adds a function that will be available to all templates.
-func ViewsFuncs(funcMap FuncMap) {
-	if views == nil {
-		panic(`response: views can't be used without a "views" directory`)
+// TemplatesFuncs adds a function that will be available to all templates.
+func TemplatesFuncs(funcMap FuncMap) {
+	if templates == nil {
+		panic(ErrNoTemplatesDir)
 	}
-	views.Funcs(template.FuncMap(funcMap))
+	templates.Funcs(template.FuncMap(funcMap))
 }
 
 // Status responds with the status code.
@@ -110,15 +117,15 @@ func JSONStatus(c *core.Context, code int, v interface{}) {
 	c.ResponseWriter.Write(b)
 }
 
-// View responds with the view associated to name.
-func View(c *core.Context, name string, data map[string]interface{}) {
-	ViewStatus(c, http.StatusOK, name, data)
+// Template responds with the template associated to name.
+func Template(c *core.Context, name string, data map[string]interface{}) {
+	TemplateStatus(c, http.StatusOK, name, data)
 }
 
-// ViewStatus responds with the status code and the view associated to name.
-func ViewStatus(c *core.Context, code int, name string, data map[string]interface{}) {
-	if views == nil {
-		panic(`response: views can't be used without a "views" directory`)
+// TemplateStatus responds with the status code and the template associated to name.
+func TemplateStatus(c *core.Context, code int, name string, data map[string]interface{}) {
+	if templates == nil {
+		panic(ErrNoTemplatesDir)
 	}
 
 	if data == nil {
@@ -128,7 +135,12 @@ func ViewStatus(c *core.Context, code int, name string, data map[string]interfac
 
 	c.ResponseWriter.Header().Set("Content-Type", "text/html; charsets=utf-8")
 	c.ResponseWriter.WriteHeader(code)
-	if err := views.ExecuteTemplate(c.ResponseWriter, name, data); err != nil {
+	if err := ExecuteTemplate(c.ResponseWriter, name, data); err != nil {
 		panic(err)
 	}
+}
+
+// ExecuteTemplate works like the standard html/template.Template.ExecuteTemplate function.
+func ExecuteTemplate(wr io.Writer, name string, data map[string]interface{}) error {
+	return templates.ExecuteTemplate(wr, name, data)
 }
