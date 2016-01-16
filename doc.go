@@ -71,7 +71,7 @@ Example:
 Views
 
 The views templates are recursively parsed from the "views" directory, just before running the server.
-The file names and extensions and the directory organization doesn't matter. All the files are parsed.
+Filenames (including extensions) and directory organization doesn't matter. All the files are parsed.
 
 Built-in functions
 
