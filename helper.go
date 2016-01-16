@@ -47,7 +47,6 @@ func viewsWalk(path string, f os.FileInfo, err error) error {
 	}
 
 	_, err = views.ParseFiles(path)
-
 	return err
 }
 
@@ -65,41 +64,41 @@ func ViewsFuncs(funcMap FuncMap) {
 	views.Funcs(template.FuncMap(funcMap))
 }
 
-// Status responds with the given status code.
-func Status(c *core.Context, v int) {
-	http.Error(c.ResponseWriter, http.StatusText(v), v)
+// Status responds with the status code.
+func Status(c *core.Context, code int) {
+	http.Error(c.ResponseWriter, http.StatusText(code), code)
 }
 
-// String responds with the given string.
+// String responds with the string s.
 func String(c *core.Context, s string) {
 	StringStatus(c, http.StatusOK, s)
 }
 
-// StringStatus responds with the given string and status code.
+// StringStatus responds with the status code and the string s.
 func StringStatus(c *core.Context, code int, s string) {
 	httputil.SetDetectedContentType(c.ResponseWriter, []byte(s))
 	c.ResponseWriter.WriteHeader(code)
 	c.ResponseWriter.Write([]byte(s))
 }
 
-// Bytes responds with the given slice of byte.
+// Bytes responds with the slice of bytes b.
 func Bytes(c *core.Context, b []byte) {
 	BytesStatus(c, http.StatusOK, b)
 }
 
-// BytesStatus responds with the given slice of byte and status code.
+// BytesStatus responds with the status code and the slice of bytes b.
 func BytesStatus(c *core.Context, code int, b []byte) {
 	httputil.SetDetectedContentType(c.ResponseWriter, b)
 	c.ResponseWriter.WriteHeader(code)
 	c.ResponseWriter.Write(b)
 }
 
-// JSON set the correct header and responds with the marshalled content.
+// JSON responds with the JSON marshalled v.
 func JSON(c *core.Context, v interface{}) {
 	JSONStatus(c, http.StatusOK, v)
 }
 
-// JSONStatus set the correct header and responds with the marshalled content and status code.
+// JSONStatus responds with the status code and the JSON marshalled v.
 func JSONStatus(c *core.Context, code int, v interface{}) {
 	b, err := json.Marshal(v)
 	if err != nil {
@@ -111,8 +110,13 @@ func JSONStatus(c *core.Context, code int, v interface{}) {
 	c.ResponseWriter.Write(b)
 }
 
-// View pass the data to the template associated to name, and responds with it.
+// View responds with the view associated to name.
 func View(c *core.Context, name string, data map[string]interface{}) {
+	ViewStatus(c, http.StatusOK, name, data)
+}
+
+// ViewStatus responds with the status code and the view associated to name.
+func ViewStatus(c *core.Context, code int, name string, data map[string]interface{}) {
 	if views == nil {
 		panic(`response: views can't be used without a "views" directory`)
 	}
@@ -122,7 +126,8 @@ func View(c *core.Context, name string, data map[string]interface{}) {
 	}
 	data["c"] = c
 
-	c.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
+	c.ResponseWriter.Header().Set("Content-Type", "text/html; charsets=utf-8")
+	c.ResponseWriter.WriteHeader(code)
 	if err := views.ExecuteTemplate(c.ResponseWriter, name, data); err != nil {
 		panic(err)
 	}
