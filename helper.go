@@ -124,7 +124,7 @@ func Template(c *core.Context, name string, data map[string]interface{}) {
 
 // TemplateStatus responds with the status code and the template associated to name.
 func TemplateStatus(c *core.Context, code int, name string, data map[string]interface{}) {
-	c.ResponseWriter.Header().Set("Content-Type", "text/html; charsets=utf-8")
+	c.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
 	c.ResponseWriter.WriteHeader(code)
 	if err := ExecuteTemplate(c.ResponseWriter, c, name, data); err != nil {
 		panic(err)
