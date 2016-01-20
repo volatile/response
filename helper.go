@@ -19,7 +19,8 @@ var (
 	// ErrNoTemplatesDir is used when a template feature is used without having the templates directory.
 	ErrNoTemplatesDir = fmt.Errorf("response: templates can't be used without a %q directory", templatesDir)
 
-	templates *template.Template
+	templates     *template.Template
+	templatesData map[string]interface{}
 )
 
 func init() {
@@ -63,12 +64,31 @@ func templatesWalk(path string, f os.FileInfo, err error) error {
 // FuncMap has the same base type as FuncMap in "text/template", copied here so clients need not import "text/template".
 type FuncMap map[string]interface{}
 
-// TemplatesFuncs adds a function that will be available to all templates.
+// TemplatesFuncs adds functions that will be available to all templates.
 func TemplatesFuncs(funcMap FuncMap) {
 	if templates == nil {
 		panic(ErrNoTemplatesDir)
 	}
+
 	templates.Funcs(template.FuncMap(funcMap))
+}
+
+// TemplatesData adds data that will be available to all templates.
+// It can be called multiple times. Existent keys will be replaced.
+func TemplatesData(data map[string]interface{}) {
+	if templates == nil {
+		panic(ErrNoTemplatesDir)
+	}
+	if data == nil || len(data) == 0 {
+		return
+	}
+
+	if templatesData == nil {
+		templatesData = make(map[string]interface{})
+	}
+	for k, v := range data {
+		templatesData[k] = v
+	}
 }
 
 // Status responds with the status code.
@@ -124,6 +144,10 @@ func Template(c *core.Context, name string, data map[string]interface{}) {
 
 // TemplateStatus responds with the status code and the template associated to name.
 func TemplateStatus(c *core.Context, code int, name string, data map[string]interface{}) {
+	if templates == nil {
+		panic(ErrNoTemplatesDir)
+	}
+
 	c.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
 	c.ResponseWriter.WriteHeader(code)
 	if err := ExecuteTemplate(c.ResponseWriter, c, name, data); err != nil {
@@ -141,6 +165,11 @@ func ExecuteTemplate(wr io.Writer, c *core.Context, name string, data map[string
 		data = make(map[string]interface{})
 	}
 	data["c"] = c
+	for k, v := range templatesData {
+		if _, ok := data[k]; !ok {
+			data[k] = v
+		}
+	}
 
 	return templates.ExecuteTemplate(wr, name, data)
 }
