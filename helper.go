@@ -65,6 +65,7 @@ func templatesWalk(path string, f os.FileInfo, err error) error {
 type FuncMap map[string]interface{}
 
 // TemplatesFuncs adds functions that will be available to all templates.
+// It is legal to overwrite elements of the map.
 func TemplatesFuncs(funcMap FuncMap) {
 	if templates == nil {
 		panic(ErrNoTemplatesDir)
@@ -73,9 +74,12 @@ func TemplatesFuncs(funcMap FuncMap) {
 	templates.Funcs(template.FuncMap(funcMap))
 }
 
+// DataMap is the type of the map defining the mapping from names to data.
+type DataMap map[string]interface{}
+
 // TemplatesData adds data that will be available to all templates.
-// It can be called multiple times. Existent keys will be replaced.
-func TemplatesData(data map[string]interface{}) {
+// It is legal to overwrite elements of the map.
+func TemplatesData(data DataMap) {
 	if templates == nil {
 		panic(ErrNoTemplatesDir)
 	}
@@ -138,12 +142,12 @@ func JSONStatus(c *core.Context, code int, v interface{}) {
 }
 
 // Template responds with the template associated to name.
-func Template(c *core.Context, name string, data map[string]interface{}) {
+func Template(c *core.Context, name string, data DataMap) {
 	TemplateStatus(c, http.StatusOK, name, data)
 }
 
 // TemplateStatus responds with the status code and the template associated to name.
-func TemplateStatus(c *core.Context, code int, name string, data map[string]interface{}) {
+func TemplateStatus(c *core.Context, code int, name string, data DataMap) {
 	if templates == nil {
 		panic(ErrNoTemplatesDir)
 	}
@@ -156,7 +160,7 @@ func TemplateStatus(c *core.Context, code int, name string, data map[string]inte
 }
 
 // ExecuteTemplate works like the standard html/template.Template.ExecuteTemplate function but ensures that the context is part of the data.
-func ExecuteTemplate(wr io.Writer, c *core.Context, name string, data map[string]interface{}) error {
+func ExecuteTemplate(wr io.Writer, c *core.Context, name string, data DataMap) error {
 	if templates == nil {
 		return ErrNoTemplatesDir
 	}
