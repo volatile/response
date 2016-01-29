@@ -66,12 +66,12 @@ type FuncMap map[string]interface{}
 
 // TemplatesFuncs adds functions that will be available to all templates.
 // It is legal to overwrite elements of the map.
-func TemplatesFuncs(funcMap FuncMap) {
+func TemplatesFuncs(funcs FuncMap) {
 	if templates == nil {
 		panic(ErrNoTemplatesDir)
 	}
 
-	templates.Funcs(template.FuncMap(funcMap))
+	templates.Funcs(template.FuncMap(funcs))
 }
 
 // DataMap is the type of the map defining the mapping from names to data.
@@ -93,6 +93,43 @@ func TemplatesData(data DataMap) {
 	for k, v := range data {
 		templatesData[k] = v
 	}
+}
+
+// Template responds with the template associated to name.
+func Template(c *core.Context, name string, data DataMap) {
+	TemplateStatus(c, http.StatusOK, name, data)
+}
+
+// TemplateStatus responds with the status code and the template associated to name.
+func TemplateStatus(c *core.Context, code int, name string, data DataMap) {
+	if templates == nil {
+		panic(ErrNoTemplatesDir)
+	}
+
+	c.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
+	c.ResponseWriter.WriteHeader(code)
+	if err := ExecuteTemplate(c.ResponseWriter, c, name, data); err != nil {
+		panic(err)
+	}
+}
+
+// ExecuteTemplate works like the standard html/template.Template.ExecuteTemplate function but ensures that the context is part of the data under key "c".
+func ExecuteTemplate(wr io.Writer, c *core.Context, name string, data DataMap) error {
+	if templates == nil {
+		return ErrNoTemplatesDir
+	}
+
+	if data == nil {
+		data = make(map[string]interface{})
+	}
+	data["c"] = c
+	for k, v := range templatesData {
+		if _, ok := data[k]; !ok {
+			data[k] = v
+		}
+	}
+
+	return templates.ExecuteTemplate(wr, name, data)
 }
 
 // Status responds with the status code.
@@ -139,41 +176,4 @@ func JSONStatus(c *core.Context, code int, v interface{}) {
 	c.ResponseWriter.Header().Set("Content-Type", "application/json")
 	c.ResponseWriter.WriteHeader(code)
 	c.ResponseWriter.Write(b)
-}
-
-// Template responds with the template associated to name.
-func Template(c *core.Context, name string, data DataMap) {
-	TemplateStatus(c, http.StatusOK, name, data)
-}
-
-// TemplateStatus responds with the status code and the template associated to name.
-func TemplateStatus(c *core.Context, code int, name string, data DataMap) {
-	if templates == nil {
-		panic(ErrNoTemplatesDir)
-	}
-
-	c.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
-	c.ResponseWriter.WriteHeader(code)
-	if err := ExecuteTemplate(c.ResponseWriter, c, name, data); err != nil {
-		panic(err)
-	}
-}
-
-// ExecuteTemplate works like the standard html/template.Template.ExecuteTemplate function but ensures that the context is part of the data.
-func ExecuteTemplate(wr io.Writer, c *core.Context, name string, data DataMap) error {
-	if templates == nil {
-		return ErrNoTemplatesDir
-	}
-
-	if data == nil {
-		data = make(map[string]interface{})
-	}
-	data["c"] = c
-	for k, v := range templatesData {
-		if _, ok := data[k]; !ok {
-			data[k] = v
-		}
-	}
-
-	return templates.ExecuteTemplate(wr, name, data)
 }
