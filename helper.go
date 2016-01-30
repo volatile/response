@@ -16,8 +16,8 @@ import (
 const templatesDir = "templates"
 
 var (
-	// ErrNoTemplatesDir is used when a template feature is used without having the templates directory.
-	ErrNoTemplatesDir = fmt.Errorf("response: templates can't be used without a %q directory", templatesDir)
+	// errNoTemplatesDir is used when a template feature is used without having the templates directory.
+	errNoTemplatesDir = fmt.Errorf("response: templates can't be used without a %q directory", templatesDir)
 
 	templates     *template.Template
 	templatesData map[string]interface{}
@@ -68,7 +68,7 @@ type FuncMap map[string]interface{}
 // It is legal to overwrite elements of the map.
 func TemplatesFuncs(funcs FuncMap) {
 	if templates == nil {
-		panic(ErrNoTemplatesDir)
+		panic(errNoTemplatesDir)
 	}
 
 	templates.Funcs(template.FuncMap(funcs))
@@ -81,7 +81,7 @@ type DataMap map[string]interface{}
 // It is legal to overwrite elements of the map.
 func TemplatesData(data DataMap) {
 	if templates == nil {
-		panic(ErrNoTemplatesDir)
+		panic(errNoTemplatesDir)
 	}
 	if data == nil || len(data) == 0 {
 		return
@@ -103,7 +103,7 @@ func Template(c *core.Context, name string, data DataMap) {
 // TemplateStatus responds with the status code and the template associated to name.
 func TemplateStatus(c *core.Context, code int, name string, data DataMap) {
 	if templates == nil {
-		panic(ErrNoTemplatesDir)
+		panic(errNoTemplatesDir)
 	}
 
 	c.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -116,7 +116,7 @@ func TemplateStatus(c *core.Context, code int, name string, data DataMap) {
 // ExecuteTemplate works like the standard html/template.Template.ExecuteTemplate function but ensures that the context is part of the data under key "c".
 func ExecuteTemplate(wr io.Writer, c *core.Context, name string, data DataMap) error {
 	if templates == nil {
-		return ErrNoTemplatesDir
+		return errNoTemplatesDir
 	}
 
 	if data == nil {
