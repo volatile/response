@@ -7,7 +7,7 @@ Templates
 Templates are recursively parsed from the "templates" directory, just before running the server.
 Filenames (including extensions) and directory organization doesn't matter: all the files are parsed.
 
-Predefined global functions are named as follows.
+Global functions are predefined:
 
 	html	uses a raw string without escaping it
 	nl2br	replaces new lines by "<br>"
