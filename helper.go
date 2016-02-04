@@ -1,6 +1,7 @@
 package response
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -106,11 +107,14 @@ func TemplateStatus(c *core.Context, code int, name string, data DataMap) {
 		panic(errNoTemplatesDir)
 	}
 
-	c.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
-	c.ResponseWriter.WriteHeader(code)
-	if err := ExecuteTemplate(c.ResponseWriter, c, name, data); err != nil {
+	var b bytes.Buffer
+	if err := ExecuteTemplate(&b, c, name, data); err != nil {
 		panic(err)
 	}
+
+	c.ResponseWriter.Header().Set("Content-Type", "text/html; charset=utf-8")
+	c.ResponseWriter.WriteHeader(code)
+	b.WriteTo(c.ResponseWriter)
 }
 
 // ExecuteTemplate works like the standard html/template.Template.ExecuteTemplate function but ensures that the context is part of the data under key "c".
