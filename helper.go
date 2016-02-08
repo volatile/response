@@ -136,6 +136,11 @@ func ExecuteTemplate(wr io.Writer, c *core.Context, name string, data DataMap) e
 	return templates.ExecuteTemplate(wr, name, data)
 }
 
+// Redirect replies to the request with a redirect to url, which may be a path relative to the request path.
+func Redirect(c *core.Context, urlStr string, code int) {
+	http.Redirect(c.ResponseWriter, c.Request, urlStr, code)
+}
+
 // Status responds with the status code.
 func Status(c *core.Context, code int) {
 	http.Error(c.ResponseWriter, http.StatusText(code), code)
