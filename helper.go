@@ -117,7 +117,10 @@ func TemplateStatus(c *core.Context, code int, name string, data DataMap) {
 	b.WriteTo(c.ResponseWriter)
 }
 
-// ExecuteTemplate works like the standard html/template.Template.ExecuteTemplate function but ensures that the context is part of the data under key "c".
+// ExecuteTemplate works like the standard html/template.Template.ExecuteTemplate function.
+// It always adds the following data to the map, but without overwriding the provided data:
+//	c		the current core.Context
+//	production	the core.Production value
 func ExecuteTemplate(wr io.Writer, c *core.Context, name string, data DataMap) error {
 	if templates == nil {
 		return errNoTemplatesDir
@@ -127,6 +130,7 @@ func ExecuteTemplate(wr io.Writer, c *core.Context, name string, data DataMap) e
 		data = make(map[string]interface{})
 	}
 	data["c"] = c
+	data["production"] = core.Production
 	for k, v := range templatesData {
 		if _, ok := data[k]; !ok {
 			data[k] = v
